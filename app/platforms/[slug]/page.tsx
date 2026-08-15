@@ -13,6 +13,7 @@ import {
   SourceCite,
 } from "@/components";
 import { getPlatformProfile } from "@/lib/data/platforms";
+import { computeScore } from "@/lib/scoring";
 import { formatFaDate, formatPct, formatToman, toFaDigits } from "@/lib/format";
 
 export const revalidate = 3600;
@@ -30,16 +31,6 @@ const LICENSE_STATUS_LABELS: Record<string, string> = {
   pending: "در انتظار راستی‌آزمایی",
   unverified: "تأیید نشد",
 };
-
-/** شش محور امتیازدهی و وزن‌ها — §۷ سند ساخت */
-const SCORE_AXES = [
-  { label: "شفافیت کارمزد", weight: 25 },
-  { label: "مجوز و اعتبار", weight: 25 },
-  { label: "تجربهٔ کاربران", weight: 15 },
-  { label: "تسویه و تحویل", weight: 15 },
-  { label: "پشتیبانی", weight: 10 },
-  { label: "شفافیت داده", weight: 10 },
-] as const;
 
 const h2 = "text-xl font-bold";
 const sectionCls = "flex flex-col gap-4";
@@ -71,20 +62,39 @@ export default async function PlatformProfilePage({ params }: PageProps) {
     licenseRows,
     methodNames,
     approvedReviewCount,
+    approvedReviewAvg,
     changeRows,
     siblings,
     latestDataAt,
   } = profile;
 
+  const score = computeScore({
+    fees: feeRows,
+    licenses: licenseRows,
+    review: {
+      approvedCount: approvedReviewCount,
+      approvedAvg: approvedReviewAvg,
+    },
+    platformStatus: platform.status,
+  });
+
   const methodsFa = platform.methods.map((s) => methodNames.get(s) ?? s);
   const firstFee = feeRows[0];
 
   /* سکشن ۳ — خلاصهٔ اتمی: بلوک اصلی استخراج ماشینی (۴۰ تا ۶۰ کلمه) */
+  const scoreSentence =
+    score.total === null
+      ? "دادهٔ کافی برای محاسبهٔ امتیاز هنوز جمع نشده است."
+      : `امتیاز فعلی طلاسنج ${toFaDigits(score.total)} از ۱۰۰ است${
+          score.incomplete
+            ? " و چون پوشش داده کامل نیست، با قاعدهٔ «دادهٔ ناکامل» محاسبه شده"
+            : ""
+        }.`;
   const atomicSummary = `${platform.nameFa} پلتفرم خرید ${
     methodsFa.length > 0 ? methodsFa.join(" و ") : "طلای آنلاین"
   } است. داده‌های این صفحه از اسناد رسمی و مشاهدهٔ مستقیم جمع‌آوری می‌شود و آخرین به‌روزرسانی آن ${
     latestDataAt ? formatFaDate(latestDataAt) : "نامشخص"
-  } است. امتیاز طلاسنج با تکمیل موتور امتیازدهی شش‌محوره در همین صفحه منتشر می‌شود.`;
+  } است. ${scoreSentence}`;
 
   const faqs = [
     {
@@ -111,7 +121,10 @@ export default async function PlatformProfilePage({ params }: PageProps) {
     },
     {
       q: `امتیاز طلاسنج به ${platform.nameFa} چقدر است؟`,
-      a: "موتور امتیازدهی شش‌محورهٔ طلاسنج در حال تکمیل است؛ امتیاز با تفکیک محورها به‌زودی در همین صفحه منتشر می‌شود.",
+      a:
+        score.total === null
+          ? "هنوز دادهٔ کافی برای امتیازدهی نداریم؛ به محض تکمیل پوشش داده، امتیاز در همین صفحه منتشر می‌شود."
+          : `امتیاز فعلی ${toFaDigits(score.total)} از ۱۰۰ است. تفکیک شش محور و منابع داده را در همین صفحه ببین.`,
     },
   ];
 
@@ -243,7 +256,7 @@ export default async function PlatformProfilePage({ params }: PageProps) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <ScoreBadge score={null} size="md" />
+          <ScoreBadge score={score.total} incomplete={score.incomplete} />
           <ConfidenceTag level={feeRows.length > 0 ? "declared" : "unknown"} />
           {latestDataAt ? (
             <DataFreshnessBadge date={latestDataAt} />
@@ -298,16 +311,22 @@ export default async function PlatformProfilePage({ params }: PageProps) {
         <h2 className={h2}>محاسبهٔ هزینهٔ واقعی در {platform.nameFa}</h2>
         <EmptyState
           title="این ابزار در راه است"
-          body="موتور محاسبهٔ هزینهٔ واقعی در اسپرینت S5 به همین‌جا می‌آید."
+          body="موتور محاسبهٔ هزینهٔ واقعی در اسپرینت بعدی (S5) به همین‌جا می‌آید."
         />
       </section>
 
-      {/* سکشن ۷ — امتیاز تفکیک‌شده */}
+      {/* سکشن ۷ — امتیاز تفکیک‌شده: حالا زنده از موتور S4 */}
       <section className={sectionCls}>
         <h2 className={h2}>امتیاز طلاسنج — تفکیک شش محور</h2>
+        {score.cappedAt75 ? (
+          <p className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-xs leading-6">
+            به دلیل پوشش ناکامل داده، سقف امتیاز ۷۵ اعمال شده است؛ با تکمیل
+            داده‌ها این سقف برداشته می‌شود.
+          </p>
+        ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
-          {SCORE_AXES.map((axis) => (
-            <div key={axis.label} className="rounded-xl bg-bg-surface p-4">
+          {score.axes.map((axis) => (
+            <div key={axis.key} className="rounded-xl bg-bg-surface p-4">
               <div className="flex items-center justify-between text-sm">
                 <span>{axis.label}</span>
                 <span className="text-muted">
@@ -316,12 +335,22 @@ export default async function PlatformProfilePage({ params }: PageProps) {
               </div>
               <div className="mt-2 h-2 rounded-full bg-bg-base">
                 <div
-                  className="h-2 rounded-full bg-muted/30"
-                  style={{ width: "0%" }}
+                  className={`h-2 rounded-full ${
+                    axis.ratio === null ? "bg-muted/30" : "bg-gold"
+                  }`}
+                  style={{
+                    width:
+                      axis.ratio === null
+                        ? "0%"
+                        : `${Math.round(axis.ratio * 100)}%`,
+                  }}
                 />
               </div>
               <p className="mt-1 text-xs text-muted">
-                نامشخص — در اسپرینت S4 فعال می‌شود
+                {axis.ratio === null
+                  ? "نامشخص"
+                  : `${toFaDigits(Math.round(axis.ratio * 100))}٪`}{" "}
+                — {axis.note}
               </p>
             </div>
           ))}

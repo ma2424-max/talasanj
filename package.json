@@ -1,6 +1,6 @@
 {
   "name": "talasanj",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "private": true,
   "description": "طلاسنج — مقایسه و امتیازدهی پلتفرم‌های خرید طلای آنلاین",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx db/seed.ts",
     "db:studio": "drizzle-kit studio"
@@ -30,6 +31,7 @@
     "drizzle-kit": "^0.31.1",
     "tailwindcss": "^4.1.7",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

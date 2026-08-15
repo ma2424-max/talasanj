@@ -74,6 +74,12 @@ export async function getPlatformProfile(slug: string) {
     )
     .slice(0, 3);
 
+  const approvedReviewAvg =
+    approvedReviewRows.length > 0
+      ? approvedReviewRows.reduce((sum, r) => sum + r.rating, 0) /
+        approvedReviewRows.length
+      : null;
+
   const latestDataAt =
     feeRows
       .map((f) => f.observedAt)
@@ -87,6 +93,7 @@ export async function getPlatformProfile(slug: string) {
     licenseRows,
     methodNames,
     approvedReviewCount: approvedReviewRows.length,
+    approvedReviewAvg,
     changeRows,
     siblings,
     latestDataAt,
