@@ -9,3 +9,8 @@ export function getVatRatePct(): number | null {
 }
 
 export const VAT_NOTE: string = assumptions.vat.note;
+
+/** مبالغ مرجع برای نمودارهای هزینهٔ مقایسه — از پیکربندی */
+export function getReferenceAmounts(): number[] {
+  return assumptions.referenceAmountsToman;
+}
