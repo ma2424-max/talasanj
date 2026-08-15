@@ -6,12 +6,13 @@ type Props = {
     licensed?: string;
     delivery?: string;
     minScore?: string;
+    sort?: string;
   };
   action?: string;
 };
 
 /**
- * نوار فیلتر دایرکتوری — فرم GET استاندارد که بدون JavaScript هم کار می‌کند.
+ * نوار فیلتر و مرتب‌سازی دایرکتوری — فرم GET استاندارد که بدون JavaScript هم کار می‌کند.
  * ترکیب‌های فیلتر طبق §۱۰.۴ سند ساخت noindex می‌شوند (در لایهٔ صفحه).
  */
 export function FilterBar({
@@ -78,12 +79,26 @@ export function FilterBar({
         </select>
       </label>
 
+      <label className="flex min-w-36 flex-col gap-1 text-xs text-muted">
+        مرتب‌سازی
+        <select
+          name="sort"
+          defaultValue={current.sort ?? ""}
+          className="rounded-lg border border-muted/30 bg-bg-base px-3 py-2 text-sm text-cream"
+        >
+          <option value="">امتیاز طلاسنج</option>
+          <option value="buyFee">کمترین کارمزد خرید</option>
+          <option value="minBuy">کمترین حداقل خرید</option>
+          <option value="fresh">تازه‌ترین داده</option>
+        </select>
+      </label>
+
       <div className="flex gap-2">
         <button
           type="submit"
           className="rounded-xl bg-gold px-5 py-2 text-sm font-bold text-bg-base"
         >
-          اعمال فیلتر
+          اعمال
         </button>
         <a
           href={action}

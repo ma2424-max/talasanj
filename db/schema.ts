@@ -148,3 +148,19 @@ export const dataChangeLog = pgTable("data_change_log", {
     .notNull()
     .defaultNow(),
 });
+
+/** لاگ کلیک مسیر خروجی /go/ — §۱۱.۱ سند ساختار (S6) */
+export const clickLogs = pgTable("click_logs", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").references(() => platforms.id, {
+    onDelete: "set null",
+  }),
+  slug: text("slug").notNull(),
+  /** صفحهٔ مبدأ (پارامتر p) */
+  page: text("page"),
+  /** شناسهٔ کمپین شبکهٔ سرمایم (پارامتر cid) */
+  cid: text("cid"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

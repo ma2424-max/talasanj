@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, ilike, ne, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   dataChangeLog,
@@ -8,6 +8,7 @@ import {
   platforms,
   reviews,
 } from "@/db/schema";
+import { computeScore } from "@/lib/scoring";
 
 /** همهٔ داده‌های لازم برای قالب پروفایل پلتفرم (§۴.۲ سند ساختار) یک‌جا */
 export async function getPlatformProfile(slug: string) {
@@ -124,4 +125,110 @@ export async function listPlatformFeesForMethod(methodSlug: string) {
     nameFa: p.nameFa,
     fee: feeByPlatform.get(p.id) ?? null,
   }));
+}
+
+/** ردیف کامل هر پلتفرم برای دایرکتوری و صفحهٔ اصلی: داده + امتیاز محاسبه‌شده */
+export async function listDirectoryEntries() {
+  const db = getDb();
+  const [platformRows, feeRows, licenseRows, reviewRows, methodRows] =
+    await Promise.all([
+      db.select().from(platforms),
+      db.select().from(platformFees),
+      db.select().from(licenses),
+      db.select().from(reviews).where(eq(reviews.status, "approved")),
+      db.select().from(methods),
+    ]);
+
+  const methodNames = new Map(methodRows.map((m) => [m.slug, m.nameFa]));
+
+  return platformRows.map((p) => {
+    const pFees = feeRows.filter((f) => f.platformId === p.id);
+    const pLicenses = licenseRows.filter((l) => l.platformId === p.id);
+    const pReviews = reviewRows.filter((r) => r.platformId === p.id);
+    const reviewAvg =
+      pReviews.length > 0
+        ? pReviews.reduce((s, r) => s + r.rating, 0) / pReviews.length
+        : null;
+    const score = computeScore({
+      fees: pFees,
+      licenses: pLicenses,
+      review: { approvedCount: pReviews.length, approvedAvg: reviewAvg },
+      platformStatus: p.status,
+    });
+    const latestDataAt =
+      pFees
+        .map((f) => f.observedAt)
+        .filter((d): d is Date => d !== null)
+        .sort((a, b) => b.getTime() - a.getTime())[0]
+        ?.toISOString() ?? null;
+    /** کارمزد مرجع برای جدول: اولویت با طلای آب‌شده، بعد اولین ردیف موجود */
+    const primaryFee =
+      pFees.find((f) => f.method === "molten-gold") ?? pFees[0] ?? null;
+    return {
+      platform: p,
+      fees: pFees,
+      licenses: pLicenses,
+      reviewCount: pReviews.length,
+      reviewAvg,
+      score,
+      latestDataAt,
+      primaryFee,
+      methodNames,
+    };
+  });
+}
+
+/** آمار زندهٔ صفحهٔ اصلی — همیشه از دیتابیس، هرگز عدد ثابت در کد */
+export async function getSiteStats() {
+  const db = getDb();
+  const [platformRows, feeRows, reviewRows] = await Promise.all([
+    db.select({ id: platforms.id }).from(platforms),
+    db.select({ observedAt: platformFees.observedAt }).from(platformFees),
+    db
+      .select({ id: reviews.id })
+      .from(reviews)
+      .where(eq(reviews.status, "approved")),
+  ]);
+  const latestDataAt =
+    feeRows
+      .map((f) => f.observedAt)
+      .filter((d): d is Date => d !== null)
+      .sort((a, b) => b.getTime() - a.getTime())[0]
+      ?.toISOString() ?? null;
+  return {
+    platformCount: platformRows.length,
+    reviewCount: reviewRows.length,
+    latestDataAt,
+  };
+}
+
+/** فهرست روش‌های خرید — برای فیلترها و کارت‌ها */
+export async function listMethods() {
+  const db = getDb();
+  return db.select().from(methods);
+}
+
+/** جستجوی سراسری سمت سرور — صفحهٔ /search/ (noindex) */
+export async function searchAll(query: string) {
+  const db = getDb();
+  const q = `%${query.trim()}%`;
+  const [platformRows, methodRows] = await Promise.all([
+    db
+      .select()
+      .from(platforms)
+      .where(
+        or(
+          ilike(platforms.nameFa, q),
+          ilike(platforms.slug, q),
+          ilike(platforms.domain, q),
+        ),
+      )
+      .limit(10),
+    db
+      .select()
+      .from(methods)
+      .where(or(ilike(methods.nameFa, q), ilike(methods.slug, q)))
+      .limit(10),
+  ]);
+  return { platforms: platformRows, methods: methodRows };
 }

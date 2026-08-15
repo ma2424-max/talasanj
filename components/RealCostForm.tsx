@@ -2,15 +2,20 @@ type Props = {
   /** مقادیر فعلی از query string برای حفظ ورودی کاربر */
   amount?: string;
   price?: string;
+  /** پیش‌فرض: submit به همان صفحه؛ در صفحهٔ اصلی به /tools/real-cost/ می‌رود */
+  action?: string;
 };
 
 /**
  * فرم محاسبهٔ هزینهٔ واقعی — فرم GET استاندارد که بدون JavaScript هم کار می‌کند.
- * بدون action می‌ماند تا به همان صفحهٔ فعلی submit شود (هم ابزار، هم پروفایل).
  */
-export function RealCostForm({ amount, price }: Props) {
+export function RealCostForm({ amount, price, action }: Props) {
   return (
-    <form method="get" className="flex flex-wrap items-end gap-3">
+    <form
+      method="get"
+      action={action}
+      className="flex flex-wrap items-end gap-3"
+    >
       <label className="flex min-w-44 flex-col gap-1 text-xs text-muted">
         مبلغ خرید (تومان)
         <input
