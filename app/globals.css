@@ -6,6 +6,10 @@
   --color-bg-surface: #171a21;
   --color-gold: #c9a227;
   --color-cream: #f5f1e6;
+  --color-positive: #4caf7d;
+  --color-negative: #e35d5d;
+  --color-warning: #e0a93e;
+  --color-muted: #9aa3b2;
 
   --font-sans: "Vazirmatn", "Tahoma", "Arial", sans-serif;
 }
@@ -18,10 +22,33 @@ html {
 body {
   background-color: var(--color-bg-base);
   color: var(--color-cream);
+  font-size: 16px;
   line-height: 1.8;
 }
 
-/* اعداد مالی همیشه با رقم‌های هم‌عرض */
+/* اعداد مالی همیشه با رقم‌های هم‌عرض (§۱۵.۲) */
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* خوانایی متن‌های بلند: حداکثر ۷۵ کاراکتر در هر خط */
+.measure {
+  max-width: 75ch;
+}
+
+/* فوکوس واضح برای دسترس‌پذیری (WCAG 2.2 AA) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* احترام به ترجیح کاهش حرکت کاربر */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
