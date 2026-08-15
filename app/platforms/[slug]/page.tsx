@@ -11,9 +11,14 @@ import {
   RiskFlag,
   ScoreBadge,
   SourceCite,
+  ToolPanel,
 } from "@/components";
+import { RealCostForm } from "@/components/RealCostForm";
+import { RealCostResult } from "@/components/RealCostResult";
 import { getPlatformProfile } from "@/lib/data/platforms";
 import { computeScore } from "@/lib/scoring";
+import { computeRealCost } from "@/lib/calc/real-cost";
+import { getVatRatePct } from "@/lib/config";
 import { formatFaDate, formatPct, formatToman, toFaDigits } from "@/lib/format";
 
 export const revalidate = 3600;
@@ -35,11 +40,20 @@ const LICENSE_STATUS_LABELS: Record<string, string> = {
 const h2 = "text-xl font-bold";
 const sectionCls = "flex flex-col gap-4";
 
-type PageProps = { params: Promise<{ slug: string }> };
+type PageProps = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function firstParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: PageProps["params"];
+}): Promise<Metadata> {
   const { slug } = await params;
   const profile = await getPlatformProfile(slug);
   if (!profile) return { title: "پلتفرم پیدا نشد | طلاسنج" };
@@ -51,8 +65,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function PlatformProfilePage({ params }: PageProps) {
+export default async function PlatformProfilePage({
+  params,
+  searchParams,
+}: PageProps) {
   const { slug } = await params;
+  const sp = await searchParams;
   const profile = await getPlatformProfile(slug);
   if (!profile) notFound();
 
@@ -80,6 +98,25 @@ export default async function PlatformProfilePage({ params }: PageProps) {
 
   const methodsFa = platform.methods.map((s) => methodNames.get(s) ?? s);
   const firstFee = feeRows[0];
+
+  /* سکشن ۶ — محاسبهٔ هزینهٔ واقعی درون‌صفحه (S5) */
+  const amountRaw = firstParam(sp.amount);
+  const priceRaw = firstParam(sp.price);
+  const amountToman = Number(amountRaw);
+  const goldPrice = Number(priceRaw);
+  const calcResult =
+    Number.isFinite(amountToman) &&
+    amountToman > 0 &&
+    Number.isFinite(goldPrice) &&
+    goldPrice > 0 &&
+    firstFee?.buyFeePct != null
+      ? computeRealCost({
+          amountToman,
+          goldPricePerGramToman: goldPrice,
+          buyFeePct: Number(firstFee.buyFeePct),
+          vatRatePct: getVatRatePct(),
+        })
+      : null;
 
   /* سکشن ۳ — خلاصهٔ اتمی: بلوک اصلی استخراج ماشینی (۴۰ تا ۶۰ کلمه) */
   const scoreSentence =
@@ -306,16 +343,56 @@ export default async function PlatformProfilePage({ params }: PageProps) {
         )}
       </section>
 
-      {/* سکشن ۶ — محاسبه‌گر درون‌صفحه (S5) */}
+      {/* سکشن ۶ — محاسبهٔ هزینهٔ واقعی درون‌صفحه (S5) */}
       <section className={sectionCls}>
-        <h2 className={h2}>محاسبهٔ هزینهٔ واقعی در {platform.nameFa}</h2>
-        <EmptyState
-          title="این ابزار در راه است"
-          body="موتور محاسبهٔ هزینهٔ واقعی در اسپرینت بعدی (S5) به همین‌جا می‌آید."
-        />
+        <ToolPanel
+          title={`محاسبهٔ هزینهٔ واقعی در ${platform.nameFa}`}
+          description="مبلغ و قیمت مرجع هر گرم طلا را وارد کن تا ببینی پس از کسر کارمزد، دقیقاً چقدر طلا می‌گیری."
+          howItWorks={
+            <>
+              <p>
+                فرمول: مبلغ خالص طلا = مبلغ ورودی − کارمزد خرید − مالیات بر
+                کارمزد؛ معادل طلا = مبلغ خالص ÷ قیمت مرجع هر گرم. نرخ مالیات از
+                فایل پیکربندی (assumptions.json) خوانده می‌شود.
+              </p>
+              <p className="mt-2">
+                کارمزد خرید ثبت‌شده برای این پلتفرم:{" "}
+                {formatPct(firstFee?.buyFeePct ?? null)}
+              </p>
+            </>
+          }
+        >
+          {firstFee && firstFee.buyFeePct !== null ? (
+            <>
+              <RealCostForm amount={amountRaw} price={priceRaw} />
+              {calcResult ? (
+                <div className="mt-4 flex flex-col gap-3">
+                  <RealCostResult result={calcResult} />
+                  {calcResult.vatIncluded ? null : (
+                    <p className="text-xs leading-6 text-muted">
+                      مالیات در این محاسبه لحاظ نشده چون نرخ آن هنوز از مرجع
+                      رسمی تأیید نشده است.
+                    </p>
+                  )}
+                  <Link
+                    href={`/tools/real-cost/?amount=${amountRaw}&price=${priceRaw}`}
+                    className="w-fit text-sm text-gold underline decoration-dotted underline-offset-4"
+                  >
+                    مقایسه با بقیهٔ پلتفرم‌ها
+                  </Link>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <EmptyState
+              title="دادهٔ کارمزد این پلتفرم هنوز ثبت نشده"
+              body="به محض راستی‌آزمایی کارمزد، محاسبه‌گر همین‌جا فعال می‌شود."
+            />
+          )}
+        </ToolPanel>
       </section>
 
-      {/* سکشن ۷ — امتیاز تفکیک‌شده: حالا زنده از موتور S4 */}
+      {/* سکشن ۷ — امتیاز تفکیک‌شده: زنده از موتور S4 */}
       <section className={sectionCls}>
         <h2 className={h2}>امتیاز طلاسنج — تفکیک شش محور</h2>
         {score.cappedAt75 ? (

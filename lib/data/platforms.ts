@@ -99,3 +99,29 @@ export async function getPlatformProfile(slug: string) {
     latestDataAt,
   };
 }
+
+/** فهرست پلتفرم‌های فعال + ردیف کارمزدشان برای یک روش — ورودی ابزار هزینهٔ واقعی */
+export async function listPlatformFeesForMethod(methodSlug: string) {
+  const db = getDb();
+  const platformRows = await db
+    .select({
+      id: platforms.id,
+      slug: platforms.slug,
+      nameFa: platforms.nameFa,
+    })
+    .from(platforms)
+    .where(eq(platforms.status, "active"));
+
+  const feeRows = await db
+    .select()
+    .from(platformFees)
+    .where(eq(platformFees.method, methodSlug));
+
+  const feeByPlatform = new Map(feeRows.map((f) => [f.platformId, f]));
+
+  return platformRows.map((p) => ({
+    slug: p.slug,
+    nameFa: p.nameFa,
+    fee: feeByPlatform.get(p.id) ?? null,
+  }));
+}

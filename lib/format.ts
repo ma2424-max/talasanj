@@ -19,6 +19,11 @@ export function formatPct(value: number | string | null): string {
   return `${toFaDigits(String(n).replace(".", "٫"))}٪`;
 }
 
+/** ۴٫۹۷۵ گرم */
+export function formatGrams(value: number): string {
+  return `${toFaDigits(value.toFixed(3).replace(".", "٫"))} گرم`;
+}
+
 /** تفاوت روز از یک تاریخ ISO تا الان */
 export function daysSince(isoDate: string, now = new Date()): number {
   const then = new Date(isoDate).getTime();
