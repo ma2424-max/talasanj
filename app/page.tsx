@@ -7,6 +7,7 @@ import {
   ToolPanel,
 } from "@/components";
 import { RealCostForm } from "@/components/RealCostForm";
+import { GUIDES } from "@/lib/content/guides-registry";
 import {
   getSiteStats,
   listDirectoryEntries,
@@ -244,7 +245,15 @@ export default async function HomePage() {
 
       {/* سکشن ۵ — روش‌های خرید طلا */}
       <section className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-6">
-        <h2 className="text-2xl font-bold">روش‌های خرید طلا</h2>
+        <div className="flex items-end justify-between">
+          <h2 className="text-2xl font-bold">روش‌های خرید طلا</h2>
+          <Link
+            href="/methods/"
+            className="text-sm text-gold underline decoration-dotted underline-offset-4"
+          >
+            همهٔ روش‌ها
+          </Link>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {methodRows.map((m) => (
             <Link
@@ -291,12 +300,29 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      {/* سکشن ۷ — تازه‌ترین راهنماها و داده‌ها */}
-      <section className="mx-auto w-full max-w-3xl px-6">
-        <EmptyState
-          title="راهنماها و داده‌های استنادپذیر در راه‌اند"
-          body="بخش راهنماها، واژه‌نامه و صفحات داده در اسپرینت محتوا (S7) فعال می‌شود."
-        />
+      {/* سکشن ۷ — تازه‌ترین راهنماها */}
+      <section className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-6">
+        <div className="flex items-end justify-between">
+          <h2 className="text-2xl font-bold">راهنماها و آموزش</h2>
+          <Link
+            href="/guides/"
+            className="text-sm text-gold underline decoration-dotted underline-offset-4"
+          >
+            همهٔ راهنماها
+          </Link>
+        </div>
+        <div className="grid gap-3">
+          {GUIDES.map((g) => (
+            <Link
+              key={g.slug}
+              href={`/guides/${g.slug}/`}
+              className="flex flex-col gap-1 rounded-2xl border border-muted/20 bg-bg-surface p-4 transition-colors hover:border-gold"
+            >
+              <p className="font-bold">{g.title}</p>
+              <p className="text-sm leading-7 text-cream/70">{g.description}</p>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* سکشن ۸ — تجربهٔ کاربران */}

@@ -66,7 +66,6 @@ export async function getPlatformProfile(slug: string) {
 
   const methodNames = new Map(methodRows.map((m) => [m.slug, m.nameFa]));
 
-  /** رقبای نزدیک برای «مقایسهٔ سریع»: همان روش + وضعیت فعال */
   const siblings = otherPlatforms
     .filter(
       (o) =>
@@ -161,7 +160,6 @@ export async function listDirectoryEntries() {
         .filter((d): d is Date => d !== null)
         .sort((a, b) => b.getTime() - a.getTime())[0]
         ?.toISOString() ?? null;
-    /** کارمزد مرجع برای جدول: اولویت با طلای آب‌شده، بعد اولین ردیف موجود */
     const primaryFee =
       pFees.find((f) => f.method === "molten-gold") ?? pFees[0] ?? null;
     return {
@@ -206,6 +204,24 @@ export async function getSiteStats() {
 export async function listMethods() {
   const db = getDb();
   return db.select().from(methods);
+}
+
+/** پلتفرم‌های فعال ارائه‌دهندهٔ یک روش + ردیف کارمزد همان روش — صفحهٔ /methods/[slug] */
+export async function listPlatformsForMethod(methodSlug: string) {
+  const db = getDb();
+  const feeRows = await db
+    .select()
+    .from(platformFees)
+    .where(eq(platformFees.method, methodSlug));
+  const platformRows = await db
+    .select()
+    .from(platforms)
+    .where(eq(platforms.status, "active"));
+  const byId = new Map(platformRows.map((p) => [p.id, p]));
+  return feeRows.flatMap((f) => {
+    const platform = byId.get(f.platformId);
+    return platform ? [{ fee: f, platform }] : [];
+  });
 }
 
 /** جستجوی سراسری سمت سرور — صفحهٔ /search/ (noindex) */
