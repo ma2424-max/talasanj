@@ -2,117 +2,90 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "ابزارهای طلا — محاسبه‌گر هزینه، حباب و پس‌انداز | طلاسنج",
-  description:
-    "زرادخانهٔ محاسباتی طلاسنج: محاسبه‌گر هزینهٔ واقعی خرید طلا و به‌زودی مقایسه‌گر روش‌ها، حباب‌سنج و ابزارهای دیگر.",
+  title: "ابزارهای طلا — هزینه، حباب، اجرت و سر‌به‌سر | طلاسنج",
+  description: "شش ابزار رایگان و شفاف طلاسنج برای بازکردن هزینه‌های خرید طلا.",
   alternates: { canonical: "/tools/" },
 };
 
 const TOOLS = [
-  {
-    href: "/tools/real-cost/",
-    name: "محاسبه‌گر هزینهٔ واقعی",
-    desc: "ببین برای مبلغ تو، پس از کسر کارمزد و مالیات، دقیقاً چقدر طلا می‌گیری و کدام پلتفرم ارزان‌تر است.",
-    ready: true,
-  },
-  {
-    href: null,
-    name: "مقایسه‌گر روش‌ها",
-    desc: "هزینهٔ ۷ روش خرید طلا را کنار هم ببین.",
-    ready: false,
-  },
-  {
-    href: null,
-    name: "حباب‌سنج سکه و طلا",
-    desc: "ببین قیمت سکه نسبت به ارزش ذاتی‌اش چقدر حباب دارد.",
-    ready: false,
-  },
-  {
-    href: null,
-    name: "طرح پس‌انداز طلا",
-    desc: "برای پس‌انداز ماهانه‌ات بهترین مسیر را پیدا کن.",
-    ready: false,
-  },
-  {
-    href: null,
-    name: "محاسبه‌گر اجرت، سود و مالیات",
-    desc: "قیمت نهایی طلای زینتی را با تفکیک اجرت و مالیات ببین.",
-    ready: false,
-  },
-  {
-    href: null,
-    name: "نقطهٔ سر‌به‌سر خرید",
-    desc: "ببین طلا چند درصد رشد کند تا خریدت به سود برسد.",
-    ready: false,
-  },
-];
+  [
+    "/tools/real-cost/",
+    "محاسبه‌گر هزینهٔ واقعی",
+    "مقدار طلای دریافتی پس از کسر کارمزد را ببین.",
+  ],
+  [
+    "/tools/method-compare/",
+    "مقایسه‌گر روش‌ها",
+    "هفت روش خرید طلا را با معیارهای یکسان مقایسه کن.",
+  ],
+  [
+    "/tools/coin-bubble/",
+    "حباب‌سنج سکه",
+    "اختلاف قیمت بازار و ارزش ذاتی را حساب کن.",
+  ],
+  [
+    "/tools/savings-plan/",
+    "محاسبه‌گر پس‌انداز طلا",
+    "اثر مبلغ ماهانه و کارمزد را در سناریوی قیمت ثابت ببین.",
+  ],
+  [
+    "/tools/ejrat/",
+    "محاسبه‌گر اجرت، سود و مالیات",
+    "قیمت طلای زینتی را به اجزایش تفکیک کن.",
+  ],
+  [
+    "/tools/break-even/",
+    "نقطهٔ سر‌به‌سر خرید",
+    "درصد رشد لازم برای جبران کارمزدها را حساب کن.",
+  ],
+] as const;
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  name: "ابزارهای طلا",
-  url: "https://talasanj.org/tools/",
-};
-
-export default function ToolsHubPage() {
+export default function ToolsPage() {
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-10">
       <nav aria-label="breadcrumb" className="text-xs text-muted">
-        <ol className="flex flex-wrap items-center gap-1">
+        <ol className="flex gap-1">
           <li>
-            <Link href="/" className="hover:text-gold">
-              خانه
-            </Link>
+            <Link href="/">خانه</Link>
           </li>
           <li aria-hidden>›</li>
-          <li aria-current="page" className="text-cream">
-            ابزارها
-          </li>
+          <li aria-current="page">ابزارها</li>
         </ol>
       </nav>
-
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-bold">ابزارهای طلا</h1>
         <p className="measure rounded-2xl bg-bg-surface p-5 leading-8">
-          ابزارهای رایگان طلاسنج برای تصمیم‌گیری بهتر خرید طلا. همهٔ محاسبات با
-          فرمول باز و منابع مشخص انجام می‌شود و باکس «چطور محاسبه شد؟» در هر
-          ابزار همیشه باز است.
+          فرمول، فرض‌ها و محدودیت‌ها در هر ابزار باز است و هیچ خروجی توصیهٔ
+          سرمایه‌گذاری نیست.
         </p>
       </header>
-
       <div className="grid gap-3 sm:grid-cols-2">
-        {TOOLS.map((tool) =>
-          tool.ready && tool.href ? (
-            <Link
-              key={tool.name}
-              href={tool.href}
-              className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-bg-surface p-5 transition-colors hover:border-gold"
-            >
-              <p className="font-bold">{tool.name}</p>
-              <p className="text-sm leading-7 text-cream/70">{tool.desc}</p>
-              <span className="text-xs font-bold text-gold">باز کن ←</span>
-            </Link>
-          ) : (
-            <div
-              key={tool.name}
-              className="flex flex-col gap-2 rounded-2xl border border-muted/20 bg-bg-surface p-5 opacity-70"
-            >
-              <p className="font-bold">
-                {tool.name}{" "}
-                <span className="rounded-full border border-muted/30 px-2 py-0.5 text-[0.7rem] text-muted">
-                  در راه است
-                </span>
-              </p>
-              <p className="text-sm leading-7 text-cream/70">{tool.desc}</p>
-            </div>
-          ),
-        )}
+        {TOOLS.map(([href, name, desc]) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex flex-col gap-2 rounded-2xl border border-gold/30 bg-bg-surface p-5 hover:border-gold"
+          >
+            <p className="font-bold">{name}</p>
+            <p className="text-sm leading-7 text-cream/70">{desc}</p>
+            <span className="text-xs font-bold text-gold">باز کن ←</span>
+          </Link>
+        ))}
       </div>
-
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "ابزارهای طلا",
+            itemListElement: TOOLS.map(([href, name], index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name,
+              url: "https://talasanj.org" + href,
+            })),
+          }).replace(/</g, "\\u003c"),
         }}
       />
     </main>

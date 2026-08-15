@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { EmptyState } from "@/components";
 import { getDb } from "@/db";
 import { methods } from "@/db/schema";
-import { METHODS_CONTENT } from "@/lib/content/methods-content";
+import { getMethodContent } from "@/lib/content/methods-content";
 import { listPlatformsForMethod } from "@/lib/data/platforms";
 import { formatPct, formatToman } from "@/lib/format";
 
@@ -40,7 +40,7 @@ export default async function MethodPage({ params }: PageProps) {
   const { slug } = await params;
   const [method, content, providers] = await Promise.all([
     loadMethod(slug),
-    Promise.resolve(METHODS_CONTENT[slug] ?? null),
+    Promise.resolve(getMethodContent(slug)),
     listPlatformsForMethod(slug),
   ]);
   if (!method || !content) notFound();

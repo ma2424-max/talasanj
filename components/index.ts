@@ -14,3 +14,4 @@ export { RiskFlag } from "./RiskFlag";
 export { ScoreBadge } from "./ScoreBadge";
 export { SourceCite } from "./SourceCite";
 export { ToolPanel } from "./ToolPanel";
+export { ToolPageShell } from "./ToolPageShell";

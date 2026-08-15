@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 const NAV = [
   { href: "/platforms/", label: "پلتفرم‌ها" },
   { href: "/methods/", label: "روش‌ها" },
+  { href: "/funds/", label: "صندوق‌ها" },
   { href: "/guides/", label: "راهنماها" },
   { href: "/glossary/", label: "واژه‌نامه" },
   { href: "/tools/", label: "ابزارها" },
@@ -24,6 +25,7 @@ const FOOTER_ACCESS = [
   { href: "/platforms/", label: "دایرکتوری پلتفرم‌ها" },
   { href: "/tools/real-cost/", label: "محاسبه‌گر هزینهٔ واقعی" },
   { href: "/methods/", label: "روش‌های خرید طلا" },
+  { href: "/funds/", label: "صندوق‌های طلا" },
   { href: "/guides/", label: "راهنماها" },
   { href: "/glossary/", label: "واژه‌نامه" },
 ];

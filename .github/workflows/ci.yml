@@ -1,0 +1,29 @@
+name: Project checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Run 47 unit tests
+        run: npm test
+      - name: Type-check
+        run: npm run typecheck
+      - name: Production build
+        if: ${{ env.DATABASE_URL != '' }}
+        run: npm run build

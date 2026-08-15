@@ -2,6 +2,7 @@ import { and, eq, ilike, ne, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   dataChangeLog,
+  funds,
   licenses,
   methods,
   platformFees,
@@ -222,6 +223,12 @@ export async function listPlatformsForMethod(methodSlug: string) {
     const platform = byId.get(f.platformId);
     return platform ? [{ fee: f, platform }] : [];
   });
+}
+
+/** فهرست صندوق‌ها — فقط داده‌های ثبت‌شده در دیتابیس */
+export async function listFunds() {
+  const db = getDb();
+  return db.select().from(funds);
 }
 
 /** جستجوی سراسری سمت سرور — صفحهٔ /search/ (noindex) */

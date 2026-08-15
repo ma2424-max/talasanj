@@ -11,20 +11,42 @@
 4. `npm run db:seed` — پرکردن دادهٔ اولیه (۷ روش + پلتفرم نمایشی)
 5. `npm run dev` — اجرا روی http://localhost:3000
 
+## امکانات نسخهٔ ۰٫۶٫۰
+
+- دایرکتوری و پروفایل پلتفرم‌ها، مقایسه و رتبه‌بندی
+- هفت صفحهٔ روش خرید، سه راهنما و واژه‌نامه
+- صفحهٔ صندوق‌های طلا در `/funds/` با دادهٔ واقعی یا حالت خالی شفاف
+- شش ابزار در `/tools/`: هزینهٔ واقعی، مقایسهٔ روش‌ها، حباب سکه، برنامهٔ پس‌انداز، اجرت و نقطهٔ سر‌به‌سر
+- `sitemap.xml`، `llms.txt` و کنترل کیفیت خودکار GitHub Actions
+
+این نسخه تغییر جدیدی در ساختار دیتابیس ندارد؛ فایل `.env.local` فعلی را نگه دار.
+
+## بررسی کامل پروژه
+
+پس از نصب وابستگی‌ها و تنظیم `.env.local`:
+
+```bash
+npm run check
+```
+
+این دستور تست، TypeScript و build را پشت‌سرهم اجرا می‌کند. راهنمای ویندوز در `START-HERE-WINDOWS.md` است و GitHub Actions نیز بعد از هر Push تست‌ها را خودکار بررسی می‌کند.
+
 ## بررسی سلامت دیتابیس
 
 بعد از اجرا، مسیر http://localhost:3000/dev/db-check را باز کن (صفحهٔ داخلی، noindex).
 
 ## اسکریپت‌ها
 
-| دستور | کار |
-| --- | --- |
-| `npm run dev` | اجرای سایت روی کامپیوتر |
-| `npm run build` / `npm start` | ساخت و اجرای نسخهٔ نهایی |
-| `npm run typecheck` | بررسی خطاهای TypeScript |
-| `npm run db:push` | همگام‌سازی جداول دیتابیس با `db/schema.ts` |
-| `npm run db:seed` | پرکردن دادهٔ اولیه از `data/seed/platforms.json` |
-| `npm run db:studio` | باز کردن رابط دیداری جداول (Drizzle Studio) |
+| دستور                         | کار                                              |
+| ----------------------------- | ------------------------------------------------ |
+| `npm run dev`                 | اجرای سایت روی کامپیوتر                          |
+| `npm run build` / `npm start` | ساخت و اجرای نسخهٔ نهایی                         |
+| `npm run typecheck`           | بررسی خطاهای TypeScript                          |
+| `npm test`                    | اجرای ۴۷ تست واحد                                |
+| `npm run check`               | تست + TypeScript + build                         |
+| `npm run db:push`             | همگام‌سازی جداول دیتابیس با `db/schema.ts`       |
+| `npm run db:seed`             | پرکردن دادهٔ اولیه از `data/seed/platforms.json` |
+| `npm run db:studio`           | باز کردن رابط دیداری جداول (Drizzle Studio)      |
 
 ## قوانین کار
 

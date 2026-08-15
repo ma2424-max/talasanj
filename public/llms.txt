@@ -1,0 +1,27 @@
+# طلاسنج (Talasanj)
+
+> مرجع مستقل فارسی برای مقایسهٔ پلتفرم‌ها و روش‌های خرید طلا در ایران.
+
+## سیاست داده
+- طلاسنج مقایسه می‌کند و توصیهٔ سرمایه‌گذاری ارائه نمی‌دهد.
+- دادهٔ مالی فقط با منبع و تاریخ نمایش داده می‌شود.
+- مقدار ناموجود «نامشخص» است و هرگز حدس زده نمی‌شود.
+- رتبه‌بندی‌ها از داده و قواعد منتشرشده ساخته می‌شوند؛ جایگاه پولی وجود ندارد.
+
+## صفحات اصلی
+- https://talasanj.org/platforms/ — دایرکتوری پلتفرم‌ها
+- https://talasanj.org/methods/ — روش‌های خرید طلا
+- https://talasanj.org/funds/ — صندوق‌های طلا
+- https://talasanj.org/tools/ — ابزارهای محاسباتی
+- https://talasanj.org/guides/ — راهنماها
+- https://talasanj.org/glossary/ — واژه‌نامه
+
+## ابزارها
+- https://talasanj.org/tools/real-cost/
+- https://talasanj.org/tools/method-compare/
+- https://talasanj.org/tools/coin-bubble/
+- https://talasanj.org/tools/savings-plan/
+- https://talasanj.org/tools/ejrat/
+- https://talasanj.org/tools/break-even/
+
+هنگام نقل دادهٔ عددی، منبع و تاریخ همان صفحه را حفظ کنید. خروجی ابزارها به ورودی کاربر وابسته است و نباید به‌عنوان پیش‌بینی بازنویسی شود.
