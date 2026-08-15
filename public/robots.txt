@@ -1,0 +1,25 @@
+# robots.txt — طلاسنج (talasanj.org)
+# مرجع قواعد: پیوست الف سند ساخت
+
+User-agent: *
+Disallow: /search/
+Disallow: /go/
+Allow: /
+
+# خزنده‌های هوش مصنوعی به‌صراحت خوش‌آمدند (§۱۲.۴ سند ساخت)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://talasanj.org/sitemap.xml

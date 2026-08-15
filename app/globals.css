@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* توکن‌های دیزاین سیستم طلاسنج — سند ساخت §۱۵.۱ */
+@theme {
+  --color-bg-base: #0f1115;
+  --color-bg-surface: #171a21;
+  --color-gold: #c9a227;
+  --color-cream: #f5f1e6;
+
+  --font-sans: "Vazirmatn", "Tahoma", "Arial", sans-serif;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-base);
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-cream);
+  line-height: 1.8;
+}
+
+/* اعداد مالی همیشه با رقم‌های هم‌عرض */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}

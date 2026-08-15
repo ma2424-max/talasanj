@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+*.tsbuildinfo
+
+# production
+build/
+
+# env files — رمزها هرگز به گیت نمی‌روند
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# os
+.DS_Store
+Thumbs.db
+
+# logs
+*.log

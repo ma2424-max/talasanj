@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "example-platform",
+    "nameFa": "پلتفرم نمایشی",
+    "domain": "example.com",
+    "methods": ["molten-gold"],
+    "status": "active",
+    "isDemo": true,
+    "fees": [
+      {
+        "method": "molten-gold",
+        "buyFeePct": 0.5,
+        "sellFeePct": 0.7,
+        "minBuyToman": 100000,
+        "withdrawalFeeToman": null,
+        "physicalDelivery": true,
+        "observedAt": "2026-08-01",
+        "fieldMeta": {
+          "buyFeePct": {
+            "confidence": "declared",
+            "source": "https://example.com/fees",
+            "observedAt": "2026-08-01"
+          },
+          "sellFeePct": {
+            "confidence": "declared",
+            "source": "https://example.com/fees",
+            "observedAt": "2026-08-01"
+          },
+          "minBuyToman": {
+            "confidence": "observed",
+            "source": "https://example.com",
+            "observedAt": "2026-08-01"
+          }
+        }
+      }
+    ],
+    "licenses": [
+      {
+        "type": "enamad",
+        "issuer": "مرکز توسعه تجارت الکترونیکی",
+        "status": "pending",
+        "sourceUrl": "https://example.com",
+        "checkedAt": "2026-08-01"
+      }
+    ]
+  }
+]
